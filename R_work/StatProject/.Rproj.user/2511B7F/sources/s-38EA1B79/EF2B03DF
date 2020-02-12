@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580784768557.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "EF2B03DF",
+    "lastKnownWriteTime" : 1580864242,
+    "last_content_update" : 1580864242872,
+    "path" : "C:/academy/hs/Rwork/StatProject/2_T-test.R",
+    "project_path" : "2_T-test.R",
+    "properties" : {
+        "cursorPosition" : "210,0",
+        "scrollLine" : "194",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,556 @@
+# 시각화 
+# package
+# plyr   
+# dplyr 
+
+install.packages("plyr")
+library("plyr")
+
+
+#데이터 병합
+x <- data.frame(id=c(1,2,3,4,5,6), height=c(169, 182, 174, 167, 178))
+
+y <- data.frame(id=c(5,4,1,3,2,7), weight=c(55, 73, 60, 57, 80, 91))
+
+xy <- join(x, y, by="id", type="left")  #6번학생은 몸무게가 없기 때문에 결측치로 나올 것이다.
+xy
+
+
+xy <- join(x, y, by="id", type="right")  #7번학생은 키가 없기 때문에 결측치로 나올 것이다.
+xy
+
+xy <- join(x, y, by="id", type="full")  #6,7번학생 결측치
+xy
+
+xy <- join(x, y, by="id", type="inner")  #결측치 다 제거하고 조인
+xy
+
+
+#다중 키일 경우 조인하기 
+x <- data.frame(key1 = c(1,1,2,2,3), key2 = c('a', 'b', 'c', 'd', 'e'), val=c(10, 20, 30, 40, 50))
+
+y <- data.frame(key1 = c(3,2,2,1,1), key2 = c('e', 'd', 'c', 'b', 'a'), val=c(500, 400, 300, 200, 100))
+
+
+
+#간단한 기술 통계량
+
+# 기술통계량
+    - tapply() : 집단변수를 대상으로 한번에 하나의 통계치를 구할 때 사용
+    - ddply() : 한번에 여러개의 통계치를 구할 때 
+    
+head(iris)
+unique(iris$Species)  #품종을 중복 제거하고 출력//품종의 카테고리
+
+#품종별로 길이를 구하려면 품종이 3개니까 세번 해야한다. 
+tapply(iris$Sepal.Length, iris$Species, mean) # sepal.length를 species별로 평균값을 냄
+tapply(iris$Sepal.Length, iris$Species, sd) # sepal.length를 species별로 편차값을 냄
+
+#문제는 하나의 통계치만 뽑을 수 있다는것
+
+#
+#ddply(iris, iris$Species, summarize, avg=mean(Sepal.Length))  #전체 데이터, 기준(그룹?), summarize, 실행시킬값
+ddply(iris, .(Species), summarize, avg=mean(Sepal.Length))  #ddply특성 때문에 특정 값을 하려면 이렇게 해야한다. 
+ddply(iris, .(Species), summarize, 
+              avg=mean(Sepal.Length), #평균
+              std=sd(Sepal.Length),   #?
+              max=max(Sepal.Length),  #최대값
+              
+              
+#########################################################################
+#dplyr
+#########################################################################
+#설치 install.packages("dplyr")
+library(dplyr)
+
+#패키지 도움말 help(package=dplyr)
+#                         기본함수
+#filter()    : 행 추출 -> subset()
+#select()    : 열 추출 -> data[,c("열이름","행이름")]
+#arrange()   : 정렬    -> order(), sort()
+#mutate()    : 열 추가 -> transform()
+#summarize() : 통계치 산출 -> aggregate()
+#group_by()   : 그룹화 
+#left_join() : 데이터 합치기(열기준)
+#bind_rows() : 데이터 합치기(행기준)
+
+
+exam <- read.csv("data/csv_exam.csv")
+exam
+
+
+#------------------
+#[filter]
+# 1반학생의 데이터만 추출하고 싶다. 
+exam[exam$class==1,]  #기본
+exam %>% filter(class==1) #exam을 다 가져온 뒤 filter처리 class가 1인것  exam$class라고 안써서 편한것
+
+# 2반이면서 영어점수가 80점 이상인 데이터 추출
+exam[exam$class==2 & exam$english >= 80,]  #기본
+exam %>% filter(class==2 & english >= 80)  #filter
+
+# 1,3,5반에 해당하는 데이터 추출
+exam %>% filter(class==1 | class==3 | class==5)
+
+#------------------
+#[select]
+
+#수학 점수만 추출
+exam[, 3] #기본
+exam %>% select(math) #select
+
+#반, 수학, 영어점수 추출
+exam %>% select(class, math, english)
+
+#수학 점수를 제외한 나머지 컬럼 추출
+exam %>% select(-math)
+
+#1반 학생들의 수학점수만 추출
+exam %>% filter(class==1) %>% select(math)  # filter로 걸러내고 그안에서 select
+
+#------------------
+#[arrange]  정렬
+
+
+#수학점수 기준으로 오름차순
+exam %>% arrange(math)
+
+#------------------
+#[mutate]
+exam$sum <- exam$math + exam$english + exam$science  #sum이라는 컬럼 추가
+head(exam)
+
+#열만 추가한다면 기본문법만 사용하는게 나을 수도 있다. 
+#다만 mutate는 위 문법을 이용해서 사용할 수 있는 장점이 있다.
+#하고 원래 테이블에 적용되는건 아니므로 담아줘야한다. 
+exam <- exam %>% mutate(total=math+english+science, mean=math+english+science/3)
+exam
+
+#------------------
+#[summarize]  통계를 정리해서 보여줌
+
+exam %>% summarise(mean_math=mean(math))  
+
+
+#------------------
+#[group_by]  
+
+exam %>% group_by(class) %>% 
+  summarize(mean_math=mean(math), 
+            sum_math=sum(math), 
+            median_math=median(math),
+            n=n()) 
+#아까는 전체데이터에 대한 요약이라면 이건 반별로 그룹해서 요약
+
+
+#------------------
+#[left_join]  
+
+test1 <- data.frame(id=c(1,2,3,4,5), medterm = c(60, 70, 80, 90, 85))
+test2 <- data.frame(id=c(1,2,3,4,5), medterm = c(70, 40, 90, 75, 90))
+
+total <- left_join(test1, test2, by = "id")
+
+
+test3 <- data.frame(id=c(1,2,3,4,5), teacher=c("kim", "lee", "park", "choi", "jung"))
+exam_new <- left_join(exam, test3, by="class")
+head(exam_new, 10)
+
+#------------------
+#[bind_rows]   행 합치기 
+group1 <- data.frame(id=c(1,2,3,4,5), test = c(60, 70, 80, 90, 85))
+group2 <- data.frame(id=c(6,7,8,9,10), test = c(70, 40, 90, 75, 90))
+
+group_all <- bind_rows(group1, group2)
+group_all
+
+
+
+####################################################################################
+# 실습
+# 시각화
+# 설치 install.packages("ggplot2")
+library(ggplot2)
+
+
+str(ggplot2::mpg)
+head(ggplot2::mpg, 50)
+class(ggplot2::mpg) #여러 형태가 결합이 되어있다. 
+
+mpg <- as.data.frame(ggplot2::mpg)
+mpg
+class(mpg) #dataframe으로 바뀌었다.
+
+#데이터 파악
+head(mpg)
+tail(mpg)
+names(mpg)
+class(mpg)
+dim(mpg)
+str(mpg)
+view(mpg)
+
+#기본 시각화
+boxplot(mpg$displ)
+
+hist(mpg$displ)
+
+plot(mpg$displ)
+
+
+# 배기량이 4이하인 차량의 모델명, 배기량, 생산년도를 출력
+mpg %>% filter(displ <= 4) %>% select(model, displ, year)
+
+# 통합연비 파생변수를 만들고 통합연비로 내림차순
+# 통합연비 : total <-(도시연비(cty) + 고속도로 연비(hwy)) / 2
+mpg$total <- (mpg$cty + mpg$hwy) / 2
+head(mpg)
+#또는
+mpg %>% mutate(total=(cty+hwy)/2) %>% arrange(desc(total)) %>% head(3)
+
+# 회사별로 "suv" 차량의 도시 및 고속도로 통합연비 평균을 구해 내림차순으로 정렬하고 1위~5위까지 출력
+mpg %>% group_by(manufacturer) %>% filter(class=='suv') %>% summarize(mean = mean(total)) %>% arrange(desc(mean)) %>% top_n(5)
+
+
+
+# 어떤 회사의 연비가 가장 높은지 알아보려고한다. hwy평균이 가장 높은 회사 세곳을 출력하시오.
+mpg %>% group_by(manufacturer) %>% summarise(hwy_mean = mean(hwy)) %>% arrange(desc(hwy_mean))
+
+
+# 어떤 회사에서 compact(경차) 차종을 가장 많이 생산하는지 알아보려한다.
+# 각 회사별 경차 차종수를 내림차순으로 정렬하여 출력
+mpg %>% group_by(manufacturer) %>% filter(class=='compact') %>% summarise(n=n()) %>% arrange(desc(n))
+
+
+
+# 연료별 가격을 구해서 새로운 데이터프레임(fuel)으로 만든 후 기존 데이터에 병합하여 출력하시오.
+# c:CNG = 2.35, d:Disel = 2.38, e:ethanol = 2.11, p:Premium = 2.76, r:Regular = 2.22
+select(mpg, manufacturer, fl)
+unique(mpg$f1)
+
+fuel <- data.frame(fl = c("p","r","e","d","c"),
+                   price= )  
+
+str(fuel)
+
+mpg <- left_join(mpg, fuel, by="fl")
+head(mpg)
+
+# 통합연비의 기준치를 통해 합격(pass)/불합격(fail)을 부여하는 test라는 이름으로 파생변수 생성. 이때 기준은 20
+mpg$test <- ifelse(mpg$total>=20, "pass", "fail")
+head(mpg)
+  
+# test에 대해 합격과 불합격을 받은 자동차가 각각 몇대인가?
+table(mpg$test)
+
+# 통합 연비 등급을 A, B, C 세 등급으로 나누는 파생변수 추가 : grade
+# 30이상이면 A, 20~29이면 B, 20미만이면 C등급으로 분류
+
+mpg$grade <- ifelse(mpg$total>=30, "A" ,ifelse(mpg$total>=20, "B", "C"))
+table(mpg$grade)
+head(mpg)
+
+
+###########################
+#실습2
+
+#미국 동부 중부 437개 지역의 인구 통계 정보를 담은 데이터 
+midwest <- as.data.frame(ggplot2::midwest)
+head(midwest)
+str(midwest)
+
+
+# 전체 인구대비 미성년 인구 백분율(ratio_child) 변수를 추가
+midwest %>% mutate(ratio_child = (poptotal-popadults)/poptotal * 100)
+
+# 미성년 인구 백분율이 가장 높은 상위 5개 지역의 미성년 인구 백분율을 출력
+midwest %>% arrange(desc(ratio_child)) %>% select(county, ratio_child) %>% head(5)
+
+# 분류표의 기준에 따라 미성년 비율 등급 변수(grade)를 추가하고, 각 등급에 몇개의 지역이 있는지 알아보자.
+# 미성년 인구 백분율이 40이상이면 "large", 30이상이면 "middle" 그렇지 않으면 "small"
+midwest %>% mutate(grade=ifelse(ratio_child>=40, 'large', ifelse(ratio_child>=30, 'middle', 'small')))
+
+# 전체 인구 대비 아시아인 인구 백분율(ratio_asian) 변수를 추가하고 하위 10개 지역의 state, country, 아시아인 인구 백분율을 출력하시오.
+
+
+#####################################################################################
+#### 데이터 전처리
+
+# 순서 : 데이터 탐색 -> 결측치 처리 -> 이상치 처리 - Feature Engineering
+
+# 데이터 탐색
+#   1) 변수 확인
+#       - 변수의 유형(범주형, 연속형, 문자형, 숫자형...)
+#       - 단 변수일 경우 : 평균, 최빈값, 중간값, 분포
+#       - 다 변수(2개)일 경우 : 관계, 차이 검정
+#       - 다 변수(3개 이상)일 경우 : 관계, 차이 검정
+
+# 결측치 처리
+#   1) 삭제
+#   2) 다른값으로 대체(평균, 최빈값, 중간값)
+#   3) 예측값 : 선형 회귀분석, 로지스틱 회귀분석등을 이용
+
+# 이상치 처리
+#   1) 이상치 탐색
+#       - 시각적 확인 : 산포도, 박스도표
+#       - 통계적 확인 : 표준 잔차, leverage, Cook's D,...
+#   2) 처리 방법
+#       - 삭제
+#       - 다른 값으로 대체
+#       - 리샘플링(케이스별로 분리)
+
+# Feature Engineering
+#   1) Scaling : 단위 변경
+#   2) Binning : 연속형 변수를 범주형 변수로 변환
+#   3) Transform : 기존 존재하는 변수의 성질을 이용해 다른 변수를 만드는 방법
+#   4) Dummy : 범주형 변수를 연속형 변수로 변환(Binning의 반대)
+
+
+######################################
+
+#----------------------------
+#[변수명 바꾸기]
+
+df_raw <- data.frame(var1=c(1,2,3), var2=c(2,3,2)) 
+df_raw
+
+#내장 함수
+df_new1 <- df_raw
+names(df_new1) <- c("v1", "v2")
+df_new1
+
+# 패키지(dplyr)
+library(dplyr)
+
+df_new2 <- df_raw
+df_new2 <- rename(df_new2, v1=var1, v2=var2)
+df_new2
+
+#------------------------------
+#[결측치 처리]
+
+# resident : 1~5까지의 값을 갖는 명목변수로 거주시를 나타낸다.
+# gender : 1~2까지의 값을 갖는 명목변수로 남/여를 나타낸다.
+# job : 1~3까지의 값을 갖는 명목변수로 직업을 나타낸다.
+# age : 양적변수(비율) : 2~69
+# position : 1~5까지의 값을 갖는 명목변수(서열)로 직위를 나타낸다.
+# price : 양적변수(비율) : 2.1 ~ 7.9
+# survey : 만족도 조사 : 1~5 : 명목변수(서열)
+
+dataset1 <- read.csv("data/dataset.csv", header=T)
+
+view(dataset1)
+head(dataset1)
+str(dataset1)
+
+
+y <- dataset1$price
+plot(y)
+
+
+attach(data)
+price
+
+detach(dataset1)
+price
+
+#결측치 확인
+summary(price)
+
+
+#결측치 제거
+sum(price) # 결측치때문에 계산 X
+sum(price, na.rm=T) # 결측치 제외하고 계산하는 옵션
+price2 <- na.omit(price) # 결측치를 컬럼에서 삭제하는 함수
+sum(price2)
+
+#---------------------------------
+#[이상치 처리]
+
+#질적자료
+table(gender)
+pie(table(gender)) #그래프그리기
+
+detach(dataset1)
+attach(dataset1)
+
+dataset1 <- subset(dataset1, gender==1 | gender==2)
+table(gender)
+pie(table(gender))
+
+
+#양적자료
+summary(price)
+
+length(price)
+
+plot(price)
+boxplot(price)
+
+dataset2 <- subset(dataset1, price>=2 & price<=8)
+length(dataset2$price)
+
+plot(dataset2$price)
+boxplot(dataset2$price)
+stem(dataset2$price)  #stem을 이용하면 각각의 데이터가 몇개인지도 알 수 있다. 
+
+
+# age의 이상치 정제 (20~69)
+
+# Featuring engineering
+view(dataset2)
+
+dataset2$resident2[dataset2$resident==1] <- "1.서울특별시"
+dataset2$resident2[dataset2$resident==2] <- "2.인천광역시"
+dataset2$resident2[dataset2$resident==3] <- "3.대전광역시"
+dataset2$resident2[dataset2$resident==4] <- "4.대구광역시"
+dataset2$resident2[dataset2$resident==5] <- "5.시구군"
+
+view(datset2)
+
+
+#Binning
+#나이변수를 청년층(30세 이하), 중년층(31세~55이하), 장년층(56세~) 로 척도 변경
+
+dataset2$age2[dataset2$age <= 30] <- "청년층"
+dataset2$age2[dataset2$age > 30 & dataset2$age <=55] <- "중년층"
+dataset2$age2[dataset2$age > 55 ] <- "장년층"
+
+view(dataset2)
+
+
+#역코딩을 위한 코드 변경
+table(dataset2$survey)
+
+survey <- dataset2$survey
+csurvey <- 6-survey
+dataset2$survey <- csurvey
+head(dataset2)
+
+
+#dummy
+
+#   거주유형 : 단독주택(1), 다가구주택(2), 아파트(3), 오피스텔(4)
+#   직업유형 : 자영업(1), 사무직(2), 서비스(3), 전문직(4), 기타
+
+
+user_data <- read.csv("data/user_data.csv", header =T)
+user_data
+
+table(user_data$house_type)
+
+house_type2 <- ifelse(user_data$house_type == 1 | user_data$house_type==2, 0, 1)
+user_data$house_type2 <- house_type2
+head(user_data, 10)
+
+# 데이터의 구조 변경(wide type, long type) : melt(long), cast(wide)
+# reshape, reshape2
+library(reshape2)
+
+str(airquality)
+head(airquality)
+
+m1 <- melt(airquality, id.var=c("Month", "Day"))
+m1
+
+m2 <- melt(airqualiry, id.var=c("Month", "Day"), variable.name = "climate_var", value.name="climate_val")
+m2
+
+dc1 <- dcast(m2, Month+Day ~ climate_var)
+head(dc1)
+
+
+
+data <- read.csv("data/data.csv")
+data
+
+wide <- dcast(data, Customer_ID ~ Date) # 기준열이 될 데이터 ~ 열로 펼칠 데이터
+wide
+
+wide1 <- dcast(data, Customer_ID ~ Date, sum) # 기준열이 될 데이터 ~ 열로 펼칠 데이터, 
+wide1
+
+long <- melt(wide, id="Customer_ID")
+long
+
+###################################
+
+###################################
+pay_data <- read.csv("data/pay_data.csv")
+head(pay_data)
+# user id를 기준으로 product_type을 wide하게 펼쳐보시오 (결과는 합계로 집계)
+product_price <- dcast(pay_data, user_id ~ product_type, sum)
+product_price
+
+
+
+###########################################################
+# mysql 연결
+
+#설치 install.packages("rJava")
+#설치 install.packages("DBI")
+#설치 install.packages("RMySQL")
+
+library(RMySQL)
+
+conn <- dbConnect()
+
+#테이블 목록 확인
+dbListTables(conn)  # 테이블 확인하는 함수  #인자는 연결정보
+
+
+#전체 데이터 조회
+result <- dbGetQuery(conn, "select count(*) from tblscore")  #인자는 연결정보, sql
+
+
+#전체 데이터 조회
+result <- dbGetQuery(conn, "select * from tblscore")
+result
+class(result)
+
+
+#테이블의 필드 목록
+dbListFields(conn, "tblscore")
+
+#DML
+dbSendQuery(conn, "delete from tblscore")
+
+#파일로부터 데이터를 읽어들여 DB에 저장
+
+#데이터 준비
+score <- read.csv("data/score.csv", header=T)
+score
+
+#dbSendQuery(conn, "drop table tblscore")
+#dbListTables(conn)
+
+#테이블에 바로 작성하겠다는 함수
+#테이블이 없어도 자동으로 만들어준다. 
+dbwriteTable(conn, "tblscore", score, overwrite=T, row.names=F)
+
+result <- dbGetQuery(conn, "select * from tblscore")
+result
+
+#db종료
+dbDisconnect(conn)
+
+#RMySQL 라이브러리 한것을 안내리고 밑에 있는걸 사용할 때 충돌이나기에
+# 끊어주어야 한다
+detach("package:RMySQL", unload=T)
+
+
+############################################################################
+# R에서 SQL문법을 쓸 수 있게 하는 패키지
+#sqldf : R+SQL
+#설치 install.packages("sqldf")
+
+
+head(iris)
+sqldf("select * from iris limit 6")
+sqldf("select * from iris order by species desc limit 10")
+sqldf("select sum('Sepal.Length') from iris")
+
+
+
+#품종 별로 갯수 확인
+sqldf("select Species, count(*) from iris group by Species")

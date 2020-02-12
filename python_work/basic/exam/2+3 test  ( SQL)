@@ -1,0 +1,232 @@
+<SQL 활용 서술형>
+
+3. SQL을 구성하고 있는 언어
+    1)DDL(Data Definition Language)
+        - CREATE
+        - ALTER
+        - DROP
+    2)DML(Data Manipulation Language)
+        - Insert
+        - Update
+        - Delete
+    3)QL(Query Language)  조회하기 위한 언어 예전에는 DML에 포함되어 있었다.
+        - Select
+    4)DCL(Data Control Language)
+        - GRANT
+        - REVOKE
+
+
+4. LIKE 연산자
+
+    열명 LIKE '패턴' 문자 일부분을 비교하는 부분검색
+
+5. 쉬워서 PASS
+
+
+
+6. 열 검색 방법과 행 검색 방법(책)
+    열검색 : SELECT COL1, COL2,... FROM TABLE;
+    행검색 : SELECT * FROM WHERE 조건식
+    
+
+
+7. 쉬워서 PASS
+
+
+
+8. MYSQL에서 행 수를 제한하는 방법 
+
+    1) SELECT *FROM test LIMIT 3;
+    2) SELECT *FROM test ORDER BY no DESC LIMIT 3;
+    3) SELECT * FROM test LIMIT 3 OFFSET 0;  (페이지 나누기)
+
+9. 함수(NULL과 관련된 함수) COALESCE?
+
+    SELECT ENAME, SAL, COMM, (SAL + COALESCE(COMM, 0)) AS '총급여' FROM EMP;
+
+
+10.CASE 문법 
+
+    SELECT ENAME, JOB, SAL, CASE WHEN JOB = 'ANALYST' THEN ROUND(SAL*1.1)
+                                             WHEN JOB = 'CLERK' THEN ROUND(SAL*1.15)
+                                             WHEN JOB = 'MANAGER' THEN ROUND(SAL*1.2)
+                                             ELSE SAL
+                                        END AS '증가된 급여'
+      FROM EMP;
+
+
+11. 다중행 연산자
+
+    IN, ANY, ALL
+
+
+12. 뷰
+
+    가상테이블
+    1) 정의 : 실제 테이블을 여러 관점에서 투영한 가상 테이블
+    
+    2) 이유
+        1) 사용자에게 편리한 접근을 허용
+        2) 컬럼단위의 보안 설정이 가능
+        
+    3) 문법
+        CREATE VIEW 뷰이름
+        AS
+        SELECT문
+        
+    4) 주의점 : DML작업(INSERT, UPDATE, DELETE)
+    
+
+<SQL 활용 실습형>
+
+1. GROUP BY 문제
+
+2. 조건식문제 WHERE
+
+3. 첫글자가 K보다 크가 Y보다 작은 직원 조회
+                SELECT ENAME, DEPTNO, JOB 
+                FROM EMP 
+                WHERE SUBSTR(ENAME, 1, 1) > 'k' 
+                  AND SUBSTR(ENAME, 1, 1) < 'y';
+            
+
+4. KING에게 보고하는 모든 직원 조회
+            SELECT ENAME, DEPTNO, JOB, SAL
+            FROM EMP
+            WHERE MGR = (SELECT EMPNO FROM EMP WHERE ENAME = 'KING');
+            
+5. 사번, 이름, 업무, 관리자, 관리자 이름 조회
+
+
+
+====================================================================
+
+<DB 구현 서술형>
+
+3. MySQL 접속 방법
+    
+        mysql [-h아이피] -u유저명 -p패스워드
+        mysql [-h아이피] -u유저명 -p
+            
+    
+4. 관계형 DB의 특징
+
+    1) 데이터의 분류, 정렬, 탐색속도가 빠르다
+    2) 오래동안 사용된만큼 신뢰성이 높다, 어떤 상황에서도 데이터의 무결성 보장
+    3) 실시간(온라인) 접근(처리)이 가능(OLTP)
+    4) 기존에 작성된 스키마를 수정하기가 어렵다.
+    5) 데이터베이스의 부하를 분석하는 것이 어렵다.
+
+
+5. DB 저장 형태  (어떤 모양으로 되있냐에 따라서 뭘)
+
+    1) 계층형 DB : Tree 
+    
+    2) 네트워크형 DB : Graph 
+    
+    3) 관계형 DB : Table     
+    
+    4) 객체지향형 DB :  Object 
+                        
+    5) 객체관계형 DB : 기존 관계형DB, 객체형DB를 같이 쓰는 것.
+    
+
+6. MySQL에서 DB 백업 방법
+
+    mysqldump -u아이디 -p패스워드 sakila > sakila.sql
+
+
+7. DW와 DataMining에 대한 설명
+
+    DW : 정보제공을 위한 통합된 데이터 저장공간, 또는 의사결정지원과정에서 효과적으로 사용될 수 있게
+         ETL된 요약된 읽기 전용 데이터베이스
+    DataMining : 데이터에 고급 통계 분석과 모델링 기법을 적용하여 유용한 패턴과 관계를 찾아내는 과정
+                 
+
+
+8. 트랙젝션
+    'All or Nothing'
+    대표적 명령어
+        ROLLBACK
+        COMMIT
+        
+    오토커밋
+        SELECT @@AUTOCOMMIT;  COMMIT상태
+        SET @@AUTOCOMMIT = FALSE;
+        
+    특성(ACID)  
+        - Atomic 원자성
+        - Consistency 일관성
+        - Isolation 고립성
+        - Durability 지속성
+
+9. 트랜젝션
+
+
+10. 인덱스
+
+    INDEX(인덱스) : 이진탐색기법사용
+        장점 : 빠르게 처리할 수 있음
+        단점 : 공간낭비
+        
+    1) 문법 
+        - CREATE INDEX 인덱스명 ON 테이블명(필드명...)
+            CREATE INDEX IDX_POINT ON TBLINDEX(POINT);
+            또는
+        - 제약을 통해서 자동 생성
+            ALTER TABLE TBLINDEX ADD INDEX 인덱스명 (컬럼1, 컬럼2...)
+            
+            
+11. 정규화
+
+        제 1정규화 : 속성값은 반드시 원자값이여야 한다.
+        제 2정규화 : 모든 키가 아닌 컬럼은 기본키 전체에 의존적이어야 한다.
+                    기본키 일부분에 의존적이어서는 안된다.
+        제 3정규화 : 키가 아닌 컬럼은 다른 키가 아닌 컬럼에 의존적이어서는 안된다.
+        
+        모델링 이유 : 데이터의 중복성 제거
+
+
+<DB 구현 실습형>
+
+1. DB 접속 후 처음 해야하는 작업들
+
+    - DB 목록 확인 show databases;
+    - DB 연결 use 테이블명
+
+2. 서브쿼리 문제  가장 최근 입사한 직원 조회
+
+3. 말단사원의 사번, 이름, 업무, 부서번호, 근무지
+            SELECT EMPNO, ENAME, JOB, DEPTNO, SAL, HIREDATE
+            FROM EMP A
+            WHERE EXISTS(SELECT * FROM EMP B WHERE B.MGR = A.EMPNO);
+
+
+4. table 만들기 (기본키, 유니크)
+
+- 기본키 
+              CREATE TABLE TBLEXAM(
+                  ID INT PRIMARY KEY,
+                  NAME VARCHAR(10)
+              )
+              
+              또는 
+              CREATE TABLE TBLEXAM(
+                  ID INT,
+                  NAME VARCHAR(10),
+                  CONSTRAINT PK_ID PRIMARY KEY(ID, NAME)
+              );
+
+- 유니크
+          CREATE TABLE TBLEXAM(
+              ID INT NOT NULL,
+              NAME VARCHAR(10),
+              AGE INT,
+              CONSTRAINT UK_NAME UNIQUE(NAME)
+          );
+
+5. 뷰
+
+        CREATE VIEW 뷰이름
+        AS
+        SELECT문

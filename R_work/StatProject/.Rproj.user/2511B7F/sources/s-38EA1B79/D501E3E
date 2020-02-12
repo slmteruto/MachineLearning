@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580862976841.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D501E3E",
+    "lastKnownWriteTime" : 1580784509,
+    "last_content_update" : 1580784509,
+    "path" : "C:/academy/hs/Rwork/StatProject/1_PowerAnalysis.R",
+    "project_path" : "1_PowerAnalysis.R",
+    "properties" : {
+        "cursorPosition" : "13,19",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

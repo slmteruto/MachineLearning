@@ -1,0 +1,43 @@
+
+[다운로드]
+1. https://www.r-project.org/  접속
+
+2. 왼쪽 메뉴중 download - cran 접속
+
+3. korea 부분 아무곳에 들어가서 os에 맞게 base로 다운로드
+
+
+[설치]
+ all next로 끝
+ 
+ 
+ 
+ 
+[최초 실행시]
+tool 설치 - R Studio
+
+1. https://rstudio.com/ 접속
+
+2. 상단 download
+
+3. free desktop 버전으로 다운로드
+
+4. all next
+
+5. 실행
+
+python - 분석
+R - 통계적으로 옳은지 판단할때 사용하는게 좋을 것(통계관련 기능쓴다면)
+
+둘이 번갈아가면서 쓰기 힘들다면 python에 R lib를 설치해서 사용 
+
+
+
+
+
+[lib 설치] - anaconda가 설치되어있어야함
+conda install -c r r-essentials
+
+
+그러면 jupyter에서 파일 생성시 R이 새로 생긴다.
+

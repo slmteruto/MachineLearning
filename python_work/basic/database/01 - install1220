@@ -1,0 +1,108 @@
+MySQL 무료버전 (버전은 5.7.28버전으로 쓴다, 호환성 문제때문에)
+
+ - https://dev.mysql.com/downloads/mysql/
+ 
+ 
+ DB
+     로컬용 : Access, SQLite
+ 
+     서버용 : Oracle, Mysql 등등
+ 
+ 
+ 
+ 클라이언트 프로그램 
+ 
+     1) 콘솔 : mysql.exe (서버 : mysqld.exe)
+         mysql -hIP주소(도메인주소) -u아이디 -p패스워드
+         mysql -hIP주소(도메인주소) -u아이디 -p   (패스워드 따로 입력할시)
+         
+     2) 윈도우
+         - WorkBench
+         https://dev.mysql.com/downloads/workbench/
+         
+         - HeidiSQL  (가볍고 간편해서 이것을 쓸 예정)
+         https://www.heidisql.com/download.php?download=portable-64
+     
+ --------------------------------------------    
+ 
+ 설치 
+ 
+ Development 설치
+ 
+ All next, All execute
+ 
+ MySQL root pw : 1111
+ 
+ All next
+ 
+ root 접속 체크
+ 
+ All next, execute
+ 
+ ---------------------------------------------
+ 
+ 실행
+ 
+ C:\Program Files\MySQL\MySQL Server 5.7\bin 
+ 
+ mysql.exe 가 클라이언트 쉘이다.
+ 
+ mysqld.exe 서버용 프로그램
+ 
+ 
+ ---------------------------------------------
+ 
+ 실행중인지 확인
+ 
+ 제어판
+ 
+ 시스템보안 -> 관리도구 -> 서비스  또는  services.msc 실행
+ 
+ MySQL57이 '시작됨'이라고 떠있으면 실행 중
+ 
+ 
+ 
+ ---------------------------------------------
+ 
+ 환경변수 추가
+ 
+ C:\Program Files\MySQL\MySQL Server 5.7\bin
+ 
+ 
+ 
+ ---------------------------------------------
+ 
+ 
+ 서버 실행 (cmd에서)
+ 
+ > mysql -uroot -p1111
+ 
+ mysql>
+ 
+ <--------------------------------------------->
+ 
+ 클라이언트(HeidiSQL)
+ 
+ 압축해제 후
+ 
+ heidisql.exe 실행
+ 
+ -----------------------------------------------
+ 설정
+ 
+ 신규
+ 
+     1) 이름변경
+     2) 
+     
+     
+     
+     
+ 실행 후
+ 
+ 사람아이콘 (사용자 인증 및 권한 관리)
+ 
+ 추가 
+     -> 사용자 user1 
+     -> 비밀번호 1111
+     

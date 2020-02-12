@@ -1,0 +1,126 @@
+3. 로컬DB로 사용하는 대표적인 dbms
+
+  - Access
+  - SQLite
+  - Apache Derby
+  - Firebird Embedded Server
+  - H2
+  - HSQL
+  - Microsoft SQL Server Compact Edition 
+
+
+4. NoSQL의 개념
+
+  - Not Only SQL / Non Relational Operational Database
+  - 빅데이터 처리를 위한 비관계형 DBMS
+  - 스키마 없이, 분산 환경에서 단순 검색 및 추가 작업을 위한 키 값을 최적화하고, 지연(latency)과 처리율(throughput)이 우수
+
+
+5. SQLite의 특징
+
+  - 파일 기반의 DBMS, 저메모리, 빠른 처리속도
+  - 오픈 소스
+  - 별도의 DB서버가 없어도 쉽고 편리하게 사용할 수 있는 Embedded SQL DB엔진
+  - 안드로이드, 아이폰 등의 스마트폰에 기본 내장된 DB
+  - 표준 SQL 지원
+  - 파이썬에도 내장
+  -----------------------------
+  -  컬럼을 삭제하거나 변경하는 것 등이 제한
+  - LEFT OUTER JOIN만 지원 (RIGHT, FULL은 지원 X)
+  - 읽기 전용 뷰만 제공
+
+6. NoSQL에서 데이터 저장 형태
+
+  - Key-Value Database : Collection of Key-Value pairs
+  - Document Database : Collection of Key-Value pairs
+  - BigTable Database : Column Families
+  - Graph Database : nodes, rels, Key-Value on both
+
+7. mongodb는 데이터 저장 형태 중에서 어느 형태에 해당되는지
+
+  - Document Database
+
+8. CAP : 가용성에 대해 설명
+
+  - 많은 사용자들이 동시에 read/write를 할 수 있어야 한다.
+  - 여러대의 서버에 데이터가 저장되어 있을 때 한쪽 노드의 데이터에 문제가 생겼다 하더라도 다른 노드에 있는 데이터를 지속적으로 사용 가능하게 해야 한다.
+
+9. PASS
+
+10. 
+
+11. DB설계 정규화를 해야하는 가장 중요한 이유
+
+  - 데이터의 중복성 제거
+
+12.
+
+13. 인덱스
+
+  - 검색속도를 향상시키기 위해 테이블에 붙이는 색인
+  - CREATE INDEX 인덱스이름 ON 테이블이름(컬럼명)
+  - 제약 CONSTRAINT를 통해 자동으로 생성
+
+______________________________________________
+1. mongodb 접속 후 사용하는 기본 명령어
+
+   1) show dbs : DB리스트 확인 (collection을 갖고 있는 db만 확인 가능)
+   2) use db이름 : DB 연결 or 생성 / 있는 db의 경우 연결, 없는 db의 경우 생성
+   3) show colections : 
+   4) db : 현재 연결되어있는 db 확인
+   5) db.db이름.find() : collection 데이터 확인
+   
+2. articles 에서 writer 값이 "Bravo"이거나 like값이 10미만인 document 조회
+
+    db.articles.find({$or:[{"writer":"Bravo"}, {"likes":{$lt:10}}]}).pretty()
+
+3. people에서 Charlie의 skills배열의 "Python"추가
+
+    db.people.update({"name":"Charlie"}, {$push:{"skill":"python"}})
+    
+4. mongdb 데이터 입력
+
+    db.createCollection("이름" [, {옵션}])
+    db.db이름.insert(Json Type 데이터)
+    (1) 객체 타입 : {"키" : 값, ...}
+    (2) 배열 타입 : [값, 값, ...]
+    (3) 혼합 사용
+      - {"키":값, "키":값, "키":[값, 값, ...]}   (ex. {"name":"홍길동", "age":20, "hobby":["농구", "탁구"]})
+      - {"키":[{"키" : 값}, {"키" : 값}, ...]}   (ex. {"body":[{"height" : 170}, {"weight" : 80}, ...]})
+      - [{"키":값, "키":값}, {"키":값, "키":값}] (ex. [{"no":1, "name":"hong"}, {"no":2, "name":"kim"}])
+
+5. SQL문장으로 mongodb로 바꿔서 작성 부교재 밑에 있음 
+
+    CREATE TABLE 테이블                  -  db.createCollection("콜렉션")
+    
+    INSERT INTO 테이블 () Values()       -  db.콜렉션.insert({키:값})
+
+    UPDATE 테이블 SET 바꿀값 WHERE 조건  -  db.콜렉션.update({필드:1},{$set:{조건}})
+    
+    DELETE FROM 테이블 WHERE 조건        - db.콜렉션.remove({조건})
+    
+    SELECT * FROM 테이블                 -  db.콜렉션.find()
+    
+    SELECT 필드 FROM 테이블              - db.콜렉션.find({},{필드:1})
+    
+    SELECT * FROM 테이블 WHERE 조건      -  db.콜렉션.find({조건})
+    
+    SELECT 필드 FROM 테이블 WHERE 조건   -  db.콜렉션.find({조건},{필드:1})
+    
+    ORDER BY 필드                        -  db.콜렉션.find().sort({필드:1})
+        
+    ORDER BY 필드 DESC                   -  db.콜렉션.find().sort({필드:-1})
+    
+    (연산자)   필드 연산자 값            -  db.콜렉션.find({필드:{연산자:값}})
+    
+    (연산자)   필드 LIKE "값%"           -  db.콜렉션.find({필드:값/}) 허엄?
+    
+    (연산자)   조건 AND 조건             -  db.콜렉션.find($and:[{조건}, {조건}, ...])
+    
+    (연산자)   조건 OR 조건              -  db.콜렉션.find($or:[{조건}, {조건}, ...])
+    
+    DISTNICT 필드 (중복제거)             -  db.콜렉션.distnict('필드')
+    
+    COUNT(필드)                          -  db.콜렉션.count()
+    
+    COUNT(필드) ... WHERE 조건           -  db.콜렉션.find({조건})..count()

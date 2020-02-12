@@ -1,0 +1,5 @@
+"0","read_excel(""data/Koweps_Codebook.xlsx"", sheet=2, col_names=T)
+"
+"2","Error in read_excel(""data/Koweps_Codebook.xlsx"", sheet = 2, col_names = T) : 
+  함수 ""read_excel""를 찾을 수 없습니다
+"

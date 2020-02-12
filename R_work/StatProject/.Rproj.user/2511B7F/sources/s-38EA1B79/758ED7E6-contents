@@ -1,0 +1,15 @@
+
+
+#자동차와 실린더 수와 변속기의 관계
+
+
+table(mtcars$cyl, mtcars$am)
+mtcars$tm <- ifelse(mtcars$am == 0, "automatic", "manual")
+result <- table(mtcars$cyl, mtcars$tm)
+result
+
+addmargins(result)
+
+
+fisher.test(result)
+

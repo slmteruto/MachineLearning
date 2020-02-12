@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1580284862641.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2193979436",
+    "id" : "90BE6E46",
+    "lastKnownWriteTime" : 1580708034,
+    "last_content_update" : 1580708034541,
+    "path" : "C:/academy/hs/Rwork/BasicProject/4_DataProcess.R",
+    "project_path" : "4_DataProcess.R",
+    "properties" : {
+        "cursorPosition" : "277,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
